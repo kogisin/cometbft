@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"reflect"
 
-	cmtsync "github.com/cometbft/cometbft/v2/libs/sync"
+	cmtsync "github.com/cometbft/cometbft/libs/sync"
 )
 
 // typeRegistry contains globally registered types for JSON encoding/decoding.
@@ -18,7 +18,7 @@ var typeRegistry = newTypes()
 // the a value or pointer based on the registered type.
 //
 // Should only be called in init() functions, as it panics on error.
-func RegisterType(_type any, name string) {
+func RegisterType(_type interface{}, name string) {
 	if _type == nil {
 		panic("cannot register nil type")
 	}
