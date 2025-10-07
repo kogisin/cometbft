@@ -53,19 +53,19 @@ func (c *LRUTxCache) GetList() *list.List {
 	return c.list
 }
 
+// Reset resets the cache to an empty state.
 func (c *LRUTxCache) Reset() {
 	c.mtx.Lock()
 	defer c.mtx.Unlock()
 
-	c.cacheMap = make(map[types.TxKey]*list.Element, c.size)
+	clear(c.cacheMap)
 	c.list.Init()
 }
 
 func (c *LRUTxCache) Push(tx types.Tx) bool {
+	key := tx.Key()
 	c.mtx.Lock()
 	defer c.mtx.Unlock()
-
-	key := tx.Key()
 
 	moved, ok := c.cacheMap[key]
 	if ok {
@@ -89,14 +89,12 @@ func (c *LRUTxCache) Push(tx types.Tx) bool {
 }
 
 func (c *LRUTxCache) Remove(tx types.Tx) {
+	key := tx.Key()
 	c.mtx.Lock()
 	defer c.mtx.Unlock()
 
-	key := tx.Key()
-	e := c.cacheMap[key]
-	delete(c.cacheMap, key)
-
-	if e != nil {
+	if e, ok := c.cacheMap[key]; ok {
+		delete(c.cacheMap, key)
 		c.list.Remove(e)
 	}
 }
